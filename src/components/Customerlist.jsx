@@ -6,12 +6,12 @@ import { Snackbar, Button } from "@mui/material";
 import AddCustomer from "./AddCustomer";
 import EditCustomer from "./EditCustomer";
 
-
 const Customerlist = () => {
     const [customers, setCustomers] = useState([]);
     const [msg, setMsg] = useState('');
     const [open, setOpen] = useState(false);
-    const [editCustomer, setEditCustomer] = useState(null);
+    
+    const gridApiRef = React.useRef(null);
 
     const columns = [
         { field: 'firstname', headerName: 'First Name', sortable: true, filter: true },
@@ -21,18 +21,14 @@ const Customerlist = () => {
         { field: 'city', headerName: 'City', sortable: true, filter: true },
         { field: 'email', headerName: 'Email', sortable: true, filter: true },
         { field: 'phone', headerName: 'Phone', sortable: true, filter: true },
-        {
-          headerName: 'Actions',
-          cellRenderer: params => (
-            <div>
-              <Button size="small" onClick={() => handleEdit(params.data)}>Edit</Button>
-              <Button size="small" color="error" onClick={() => deleteCustomer(params)}>Delete</Button>
-            </div>
-          ),
-          width: 150,
+        {cellRenderer: params => <EditCustomer onSave={handleEdit} params={params} />
+          ,width: 150,
         },
-      ];
-      
+        {cellRenderer: params => (
+             <Button size="small" color="error" onClick={() => deleteCustomer(params)}>Delete</Button>)
+             ,width: 150,
+        },
+    ];
 
     useEffect(() => {
         getCustomers();
@@ -49,7 +45,6 @@ const Customerlist = () => {
             })
             .catch(error => {
                 console.error(error);
-                // Handle error or set an appropriate state
             });
     }
 
@@ -83,58 +78,54 @@ const Customerlist = () => {
             })
             .catch(err => console.error(err));
     };
-    
-    const handleEdit = (customer) => {
-        setEditCustomer({ ...customer });
-        setOpen(true);
-    }
-    
 
-    const handleSave = () => {
 
-        fetch(editCustomer.links[0].href, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(editCustomer),
-        })
-        .then(response => {
-            if (response.ok) {
-                setMsg('Customer is updated');
-                setOpen(false);
-                getCustomers();
-            } else {
-                alert('Something went wrong');
-            }
-        })
-        .catch(error => console.error(error));
+
+ const handleEdit = (editUrl, editCustomer) => {
+    fetch(editUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editCustomer),
+    })
+    .then(response => {
+        if (response.ok) {
+            setMsg('Customer is updated');
+            setOpen(false);
+            getCustomers();
+        } else {
+            alert('Something went wrong');
+        }
+    })
+    .catch(error => console.error(error));
+}
+
+    const handleExport = () => {
+        if (gridApiRef.current) {
+            gridApiRef.current.exportDataAsCsv();
+        }
     }
 
     return (
         <>
-        <AddCustomer addCustomer={addCustomer} 
-       EditCustomer editCustomer={editCustomer} onSave={handleSave} 
-       onCancel={() => setOpen(false)} open={open}/>
-    <div className="ag-theme-material"
-    style={{height: "700px", width: "100%", margin: "auto"}}>
-            
-                
-                    <AgGridReact
-                        rowData={customers}
-                        columnDefs={columns}
-                        pagination={true}
-                        paginationPageSize={10}
-                        >
-                </AgGridReact>
-                
+            <AddCustomer addCustomer={addCustomer} ></AddCustomer>
+
+            <div className="ag-theme-material" style={{ height: "700px", width: "100%", margin: "auto" }}>
+                <AgGridReact
+                    rowData={customers}
+                    columnDefs={columns}
+                    pagination={true}
+                    paginationPageSize={10}
+                    onGridReady={(params) => gridApiRef.current = params.api}
+                />
                 <Snackbar
                     open={open}
                     autoHideDuration={3000}
                     onClose={() => setOpen(false)}
                 />
+                <Button onClick={handleExport}>Export to CSV</Button>
             </div>
         </>
     );
+}
 
-    } 
 export default Customerlist;
-    

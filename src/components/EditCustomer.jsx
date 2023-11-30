@@ -3,18 +3,32 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } 
 
 function EditCustomer(props) {
   const [editedCustomer, setEditedCustomer] = useState({
-    firstname: '',
-    lastname: '',
-    streetaddress: '',
-    postcode: '',
-    city: '',
-    email: '',
-    phone: ''
+        firstname: '',
+        lastname: '',
+        streetaddress: '',
+        postcode: '',
+        city: '',
+        email: '',
+        phone: '' 
   });
 
-  useEffect(() => {
-    setEditedCustomer(props.customer);
-  }, [props.customer]);
+  const [open, setOpen] = useState(false); // Is edit dialog open?
+
+
+  const handleClickOpen = () => {
+    setEditedCustomer({
+      firstname: props.params.data.firstname,
+      lastname: props.params.data.lastname,
+      streetaddress: props.params.data.streetaddress,
+      postcode: props.params.data.postcode,
+      city: props.params.data.city,
+      email: props.params.data.email,
+      phone: props.params.data.phone,
+
+        
+    })
+    setOpen(true);
+  };
 
   const handleInputChange = (event) => {
     setEditedCustomer({
@@ -24,37 +38,81 @@ function EditCustomer(props) {
   };
 
   const handleSave = () => {
-    props.onSave(editedCustomer);
-    props.onClose();  // Close the dialog when saving
+    const editUrl = props.params.data.links[0].href;
+    props.onSave(editUrl, editedCustomer);
+    
+    setOpen(false);
   };
 
-  const handleClose = () => {
-    props.onClose();  // Close the dialog without saving
+  const handleClose = (event, reason) => {
+    if (reason != 'backdropClick'){
+      
+      setOpen(false); 
+    }
   };
 
   return (
-    <Dialog open={props.open} onClose={handleClose}>
+    <div>
+    <Button
+    onClick={() => handleClickOpen()}>Edit</Button>
+    <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Edit customer</DialogTitle>
       <DialogContent>
         <TextField
           label="First Name"
           name="firstname"
-          value={editedCustomer.firstname || ""}
+          value={editedCustomer.firstname}
           onChange={handleInputChange}
         />
         <TextField
           label="Last Name"
           name="lastname"
-          value={editedCustomer.lastname || ""}
+          value={editedCustomer.lastname}
           onChange={handleInputChange}
-        />
-        {/* Add more fields as needed */}
+        >
+         </TextField>
+            <TextField
+                label='Street address'
+                name='streetaddress'
+                value={editedCustomer.streetaddress}
+                onChange={handleInputChange}
+            >
+            </TextField>
+            <TextField
+                label='Postcode'
+                name='postcode'
+                value={editedCustomer.postcode}
+                onChange={handleInputChange}
+            >
+            </TextField>
+            <TextField
+                label='City'
+                name='city'
+                value={editedCustomer.city}
+                onChange={handleInputChange}
+            >
+            </TextField>
+            <TextField
+                label='Email'
+                name='email'
+                value={editedCustomer.email}
+                onChange={handleInputChange}
+            >
+            </TextField>
+            <TextField
+                label='Phone number'
+                name='phone'
+                value={editedCustomer.phone}
+                onChange={handleInputChange}
+            >
+            </TextField>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onCancel}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSave}>Save</Button>
       </DialogActions>
     </Dialog>
+    </div>
   );
 }
 
