@@ -17,8 +17,10 @@ const Traininglist = () => {
          valueFormatter: params => dayjs(params.value).format('DD.MM.YYYY HH:mm'),},
         { field: 'duration', headerName: 'Duration', sortable: true, filter: true },
         { field: 'activity', headerName: 'Activity', sortable: true, filter: true},
-        { field: 'customer.lastname', headerName: 'Last name', sortable: true, filter: true },
-        { field: 'customer.firstname', headerName: 'First name', sortable: true, filter: true },
+        { field: 'customer', headerName: 'Customer', 
+        valueGetter: (params) => {return params.data.customer.firstname + ' ' + params.data.customer.lastname},
+        sortable: true, filter: true },
+       
 
         {
             headerName: 'Actions',

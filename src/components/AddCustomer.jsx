@@ -26,7 +26,7 @@ const handleSave = () => {
 return (
     <>
     <Button
-    onClick={() => setOpen(true)}>New customer</Button>
+    onClick={() => setOpen(true)}>Add a new customer</Button>
     <Dialog
     open={open}
        onClose={handleClose} >

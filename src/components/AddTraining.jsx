@@ -34,7 +34,7 @@ export default function AddTraining(props) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <>
-        <Button onClick={() => setOpen(true)}>New training</Button>
+        <Button onClick={() => setOpen(true)}> Add a new training</Button>
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>New training</DialogTitle>
           <DialogContent>

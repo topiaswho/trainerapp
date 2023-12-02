@@ -108,7 +108,7 @@ const Customerlist = () => {
     return (
         <>
             <AddCustomer addCustomer={addCustomer} ></AddCustomer>
-
+            <Button onClick={handleExport} >Export to CSV</Button>
             <div className="ag-theme-material" style={{ height: "700px", width: "100%", margin: "auto" }}>
                 <AgGridReact
                     rowData={customers}
@@ -122,7 +122,7 @@ const Customerlist = () => {
                     autoHideDuration={3000}
                     onClose={() => setOpen(false)}
                 />
-                <Button onClick={handleExport}>Export to CSV</Button>
+                
             </div>
         </>
     );
